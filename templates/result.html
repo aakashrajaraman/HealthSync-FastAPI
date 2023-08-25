@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Symptom Checker Results</title>
+</head>
+<body>
+    <h1>Symptom Checker Results</h1>
+    <div>
+        <strong>Suspected Disease:</strong> {{ suspected_disease }}
+    </div>
+    <div>
+        <strong>Specialist Department:</strong> {{ specialist_department }}
+    </div>
+    <div>
+        <strong>Severity:</strong> {{ severity }}
+    </div>
+    <div>
+        <strong>Observed Symptoms:</strong>
+        <ul>
+            {% for symptom in observed_symptoms %}
+            <li>{{ symptom }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        {% for clinic in clinic_data%}
+        <strong>Clinic Name:</strong> {{ clinic['name'] }}
+        <strong>Email:</strong> {{ clinic['email'] }}
+        <strong>Phone:</strong> {{ clinic['phone'] }}
+        <strong>Primary Doctor:</strong> {{ clinic['prim_doc'] }}
+        {% endfor %}
+    </div>
+</body>
+</html>

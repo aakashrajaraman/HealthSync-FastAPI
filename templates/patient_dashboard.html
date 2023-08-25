@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dashboard UI</title>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static',path='patient_dashboard.css')}}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap">
+
+</head>
+<body>
+
+<div class="sidebar">
+  
+	<h1 class="logo" align ="center">H<span>ealth</span>S<span>ync</span></h1>
+	<i class="fa fa-chevron-left menu-icon"></i>
+	<ul class="sidenav">
+		<li class="active"><i class="fa fa-home"></i><a href="#"> Dashboard
+			<span class="span1"><i class="fa fa-angle-right"></i></span>			
+		</a>	
+		</li>
+		<li><i class="fa fa-file"></i><a href="{{url_for('profile')}}"> Profile</a></li>
+    <li><i class="fa fa-file"></i><a href="{{url_for('showDocs')}}"> View Documents</a></li>
+		<li><i class="fa fa-calendar"></i><a href="{{url_for('uploadRedir')}}"> Upload Documents</a></li>
+		<li><i class="fa fa-clone"></i><a href="{{url_for('recRedir')}}"> Recommendations</a></li>
+		<li><i class="fa fa-file-text"></i><a href="{{url_for('logout')}}"> Log out</a></li><br>
+    <br><br><br><br><br><br><br><br><br>
+    <li><i class="fa fa-file-text"></i><a href="#"> Translate</a></li>    
+    <li id="google_translate_element"></li>
+
+		
+	</ul>
+</div>
+
+<div class="main">
+	<div class="main-top">
+		<input type="text" name="" class="input" placeholder="Search">
+		<div class="top-right">
+			
+			<a href="#" class="user1"><img src="{{url_for('static',path='profile.png')}}" class="user">
+				<div class="profile-div">
+					<p><i class="fa fa-user"></i> &nbsp;&nbsp;Profile</p>
+					<p><i class="fa fa-cog"></i> &nbsp;&nbsp;Settings</p>
+					<p><i class="fa fa-power-off"></i> Log Out</p>
+				</div>
+			</a>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+
+
+	<div class="cong-box">
+
+    
+    <div class="analytics__header-content">
+      <div class="analytics__header-content_header">SMART CLINIC RECOMMENDER</div>
+      <br><br><br><br><br><br><br>
+      <button class="analytics__header-button">
+          <p> <a href = "{{url_for('recRedir')}}">DISCOVER</a></p>
+          <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="feather feather-arrow-up-right">
+              <line x1="7" y1="17" x2="17" y2="7"></line>
+              <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+      </button>
+  </div>
+  
+  
+  </div>
+
+	<div class="com-boxa">
+
+    
+		<div class="com-inner">
+		<img src="{{url_for('static',path='/percent_tag.png')}}" width="105%" > 
+	 </div>
+	</div>
+	<div class="com-box">
+    
+		  
+      <img src="{{url_for('static',path='/Ad.png')}}" width="190%" >
+      
+	</div>
+	<div class="table-box">
+        <div class="card">
+        <div class="image">
+          <img src="{{url_for('static',path='/profile.png')}}">
+        </div>
+        <div class="infos">
+          <div class="name">
+            {%if name%}
+            <h1>{{name}}</h1>
+            {%endif%}
+            <h2>Patient</h2>
+          </div>
+          <p class="text">
+            Medical History: {{user_bio}}
+          </p>
+          <div class="stats">
+            <p>Age: &nbsp; &nbsp;</p>
+            <p>{{age}}</p>
+          </div> 
+          
+          <ul class="stats">
+            <li><p>Gender: &nbsp; &nbsp; </p></li>
+            <p>{{gender}}</p>
+            
+          </ul>
+          <ul class="stats">
+            <li><p>Current Status: &nbsp; &nbsp;</p></li>
+            <p>Active</p>
+          </ul>
+           
+          
+        </div>
+      </div>  
+	</div>
+
+
+	<div class="t-sale">
+		
+			<div class="content-box-1">
+			
+			<p class="head-1">UPLOAD YOUR REPORTS </p>
+      <div style="text-align: center; font-size: 15px;" ><button class="btn"><a href="{{url_for('uploadRedir')}}">UPLOAD FILES</a></button></div>
+      
+			<div class="circle-wrap">
+      <div class="circle">
+      <div class="mask full">
+        <div class="fill"></div>
+      </div>
+      <div class="mask half">
+        <div class="fill"></div>
+      </div>
+      <div class="inside-circle" > <i class="fa fa-medkit"></i></div>
+      
+      
+    </div>
+  </div>
+		</div>
+    
+	</div>
+	</div>
+
+</div>
+
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+      new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+  }
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $(".span1").click(function(){
+    $(".dropdown").slideToggle(500);
+  });
+});
+
+	$('.sidenav li').click(function(){
+    $('.sidenav li').removeClass("active");
+    $(this).addClass("active");
+});
+</script>
+
+<script type="text/javascript">
+	$(".menu-icon").click(function(e) {
+        e.preventDefault();
+        $(".menu-icon").toggleClass("menuicon");
+        $(".main").toggleClass("main-width");
+        $(".sidebar").toggleClass("active1");
+        $(".sidenav li a").toggleClass("anchor");
+        $(".sidenav li").toggleClass("lislide");
+        $(".sidenav p").toggleClass("apphide");
+        $(".logo span").toggleClass("headspan");
+        $(".logo").toggleClass("lm");
+
+});
+</script>
+<script>
+$(document).ready(function(){
+  $(".user").click(function(){
+    $(".profile-div").toggle(1000);
+  });
+  $(".bell").click(function(){
+    $(".notification-div").toggle(1000);
+  });
+});
+</script>
+</body>
+</html>
