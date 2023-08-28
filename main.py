@@ -22,11 +22,10 @@ import io
 from doctr.io import DocumentFile
 import tensorflow as tf
 
-#predictor = torch.load(r"D:/Backup/Desktop/programs/HealthSync/text_extraction_model.pth")
+# predictor = torch.load(r"D:/Backup/Desktop/programs/HealthSync/text_extraction_model.pth")
 clinic_data = {}
 global userType
 apps = []
-
 
 
 templates = Jinja2Templates(directory="templates")
@@ -39,13 +38,12 @@ path = os.getenv('FIREBASE_KEY_PATH')
 bucket_path = "healthsync-c9b49.appspot.com"
 current_date = datetime.date.today()
 
-cred  = credentials.Certificate(path)
+cred = credentials.Certificate(path)
 firebase_admin.initialize_app(cred)
 client = storage.Client.from_service_account_json(path)
 
 app.secret_key = "HealthSync"
 firestoreDB = firestore.client()
-
 
 
 session = {}
@@ -83,8 +81,8 @@ def check_existing_data(field_name, value):
     clinicRef = firestoreDB.collection('clinics')
     query = clinicRef.where(field_name, '==', value).limit(1).stream()
     if len(list(query)) > 0:
-        raise HTTPException(status_code=400, detail=f'{field_name.capitalize()} already exists')
-
+        raise HTTPException(
+            status_code=400, detail=f'{field_name.capitalize()} already exists')
 
 
 # Function to convert string to camel case format
@@ -97,9 +95,15 @@ templates = Jinja2Templates(directory="templates")
 
 # Your Firestore initialization and other imports
 
+
 @app.get("/", response_class=HTMLResponse)
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/chatbot")
+async def chatbot_page(request: Request):
+    return templates.TemplateResponse("chatbot.html", {"request": request})
 
 
 @app.post('/clinicSignUp')
@@ -128,7 +132,7 @@ async def clinicSignUp(
         'prim_doc': prim_doc,
         'specialties': specialties
     }
-    
+
     check_existing_data('username', username)
     check_existing_data('email', email)
     check_existing_data('phone', phone)
@@ -154,7 +158,7 @@ async def userSignUp(
     user_job: str = Form(...),
     gender: str = Form(...),
     checkbox: List[str] = Form(...),
-    
+
 ):
     # Check Firestore for existing data and perform validation
     # Note: This part might need to be adapted to use Firestore operations
@@ -169,14 +173,16 @@ async def userSignUp(
     if username in query:
         raise HTTPException(status_code=400, detail="Username already exists")
     if user_email in query:
-        raise HTTPException(status_code=400, detail="User email already exists")
+        raise HTTPException(
+            status_code=400, detail="User email already exists")
     if phone in query:
-        raise HTTPException(status_code=400, detail="Phone number already exists")
+        raise HTTPException(
+            status_code=400, detail="Phone number already exists")
     if aadhaar in query:
         raise HTTPException(status_code=400, detail="Aadhaar already exists")
 
     # Placeholder for Firestore write operation (replace with actual write)
-    foldername= username
+    foldername = username
     bucket = client.get_bucket(bucket_path)
     blob = bucket.blob(foldername+'/')
     blob.upload_from_string('')
@@ -195,10 +201,8 @@ async def userSignUp(
         'gender': gender
     }
     firestoreDB.collection('patients').add(patient_data)
-    
 
     return templates.TemplateResponse("login.html", {"request": request})
-
 
 
 @app.post("/login")
@@ -208,7 +212,7 @@ async def login(
     password: str = Form(...),
     userType: str = Form(...),
     response_class=HTMLResponse,
-    
+
 ):
     if userType == "patient":
         collection = "patients"
@@ -229,7 +233,8 @@ async def login(
                 if userType == "patient":
                     # Get info of patient to render on page
                     name = user_data["name"]
-                    age = datetime.datetime.now().date() - datetime.datetime.strptime(user_data["date"], "%m%d%Y").date()
+                    age = datetime.datetime.now().date(
+                    ) - datetime.datetime.strptime(user_data["date"], "%m%d%Y").date()
                     years = age.days // 365
                     gender = user_data["gender"]
                     session["userType"] = "patient"
@@ -244,7 +249,8 @@ async def login(
 
                     return templates.TemplateResponse(
                         "patient_dashboard.html",
-                        {"request": request, "name": name, "age": years, "gender": gender, "user_bio": user_data["user_bio"]},
+                        {"request": request, "name": name, "age": years,
+                            "gender": gender, "user_bio": user_data["user_bio"]},
                     )
                 elif userType == "clinic":
                     # Get info of clinic to render on page
@@ -256,27 +262,34 @@ async def login(
                     upcoming_patients = 0
 
                     appointmentsDB = firestoreDB.collection("appointments")
-                    appointments = appointmentsDB.where("clinic", "==", username).stream()
+                    appointments = appointmentsDB.where(
+                        "clinic", "==", username).stream()
 
                     apps = []  # Initialize the apps list
 
                     for doc in appointments:
                         app_data = doc.to_dict()
                         app_date = app_data.get("time")
-                        findate = datetime.datetime.strptime(app_date, "%d-%m-%Y %I:%M %p").date()
+                        findate = datetime.datetime.strptime(
+                            app_date, "%d-%m-%Y %I:%M %p").date()
                         current_date = datetime.datetime.now().date()
                         if findate > current_date:
                             upcoming_patients += 1
                             patient_username = app_data.get("patient")
                             if patient_username:
                                 total_patients += 1
-                                patient_doc = firestoreDB.collection("patients").where("username", "==", patient_username).limit(1).stream()
+                                patient_doc = firestoreDB.collection("patients").where(
+                                    "username", "==", patient_username).limit(1).stream()
                                 patient_doc = list(patient_doc)
                                 if patient_doc:
-                                    app_data["patient_name"] = patient_doc[0].to_dict().get("name")
-                                    days = current_date - datetime.datetime.strptime(patient_doc[0].to_dict().get("date"), "%m%d%Y").date()
+                                    app_data["patient_name"] = patient_doc[0].to_dict().get(
+                                        "name")
+                                    days = current_date - \
+                                        datetime.datetime.strptime(
+                                            patient_doc[0].to_dict().get("date"), "%m%d%Y").date()
                                     years = days.days // 365
-                                    app_data["p_username"] = patient_doc[0].to_dict().get("username")
+                                    app_data["p_username"] = patient_doc[0].to_dict().get(
+                                        "username")
                                     app_data["patient_age"] = years
                             apps.append(app_data)
 
@@ -292,13 +305,13 @@ async def login(
 
                     return templates.TemplateResponse(
                         "clinic_dashboard.html",
-                        {"request":request, "clinic_data": clinic_data, "appointments": apps},
+                        {"request": request, "clinic_data": clinic_data,
+                            "appointments": apps},
                     )
         else:  # wrong password
             return templates.TemplateResponse("login.html")
     else:  # wrong username
         return templates.TemplateResponse("login.html")
-
 
 
 # Protected route for logout
@@ -308,36 +321,45 @@ async def logout(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 # Route for user redirection
+
+
 @app.get('/userRedir', response_class=HTMLResponse)
 def userRedir(request: Request):
     return templates.TemplateResponse("userSignUp.html", {"request": request})
 
 # Route for patient redirection
+
+
 @app.get('/patientRedir', response_class=HTMLResponse)
 def patientRedir(request: Request):
     name = session['name']
     user_bio = session['user_bio']
-    age = datetime.datetime.now().date() - datetime.datetime.strptime(session['date'], '%m%d%Y').date()
+    age = datetime.datetime.now().date(
+    ) - datetime.datetime.strptime(session['date'], '%m%d%Y').date()
     years = age.days // 365
     gender = session['gender']
     return templates.TemplateResponse(
         "patient_dashboard.html",
-        {"request": request, "name": name, "age": years, "user_bio": user_bio, "gender": gender},
+        {"request": request, "name": name, "age": years,
+            "user_bio": user_bio, "gender": gender},
     )
 
 # Route for clinic redirection
+
+
 @app.get('/clinicRedir',  response_class=HTMLResponse)
 async def clinicRedir(request: Request):
-    specialties = ['Dermatology', 'Allergology', 'Gastroenterology', 
-                   'Hepatology', 'Infectious Diseases', 'Endocrinology', 
-                   'Pulmonology', 'Cardiology', 'Neurology', 'Orthopedics', 
-                   'Internal Medicine', 'Proctology', 'Vascular Surgery', 
+    specialties = ['Dermatology', 'Allergology', 'Gastroenterology',
+                   'Hepatology', 'Infectious Diseases', 'Endocrinology',
+                   'Pulmonology', 'Cardiology', 'Neurology', 'Orthopedics',
+                   'Internal Medicine', 'Proctology', 'Vascular Surgery',
                    'Rheumatology', 'Otolaryngology', 'Urology']
-    
+
     return templates.TemplateResponse(
         "clinicSignUp.html",
         {"request": request, "specialties": specialties},
     )
+
 
 @app.get("/dashRedir")
 async def dashRedir(request: Request):
@@ -372,6 +394,7 @@ async def upload(
 async def uploadRedir(request: Request):
     return templates.TemplateResponse("upload.html", {"request": request})
 
+
 @app.get("/recRedir")
 async def recRedir(request: Request):
     response = {}
@@ -386,7 +409,8 @@ async def profile(request: Request):
         name = session['name']
         email = session['user_email']
         phone = session['phone']
-        age = current_date-datetime.datetime.strptime(session['date'], '%m%d%Y').date()
+        age = current_date - \
+            datetime.datetime.strptime(session['date'], '%m%d%Y').date()
         age = age.days//365
         address = session['address']
         bio = session['user_bio']
@@ -403,9 +427,9 @@ async def profile(request: Request):
         }
         username = session['username']
         bucket = client.get_bucket(bucket_path)
-        blobs = bucket.list_blobs(prefix=username+'/') 
+        blobs = bucket.list_blobs(prefix=username+'/')
         prefixes = set()
-        toBeRendered =[]
+        toBeRendered = []
 
         for blob in chain(*blobs.pages):
             prefixes.add(blob.name.split('/')[0])
@@ -414,34 +438,37 @@ async def profile(request: Request):
                 pdf_name = pdf_name.split('/')[1]
                 pdf_link = f"https://storage.googleapis.com/{bucket_path}/{blob.name}"
                 metadata = blob.metadata
-                #remove brackets and the word metadata from metadata
+                # remove brackets and the word metadata from metadata
                 metadata = str(metadata)
                 metadata = metadata.replace('metadata', '')
                 metadata = metadata.replace('{', '')
                 metadata = metadata.replace('}', '')
                 metadata = metadata.replace("'", '')
                 metadata = metadata.replace(':', '')
-                tbu = {'pdf_name': pdf_name, 'pdf_link': pdf_link, 'metadata': metadata}
+                tbu = {'pdf_name': pdf_name,
+                       'pdf_link': pdf_link, 'metadata': metadata}
                 toBeRendered.append(tbu)
         return templates.TemplateResponse('profile.html', {'request': request, 'patient_data': patient_data, 'toBeRendered': toBeRendered})
     elif session["userType"] == 'clinic':
         username = request.query_params.get('p_username')
-        
-        patient_doc_query = firestoreDB.collection('patients').where('username', '==', username).limit(1).stream()
+
+        patient_doc_query = firestoreDB.collection('patients').where(
+            'username', '==', username).limit(1).stream()
         patient_doc = list(patient_doc_query)
-        
+
         if patient_doc:
             patient_dict = patient_doc[0].to_dict()
             name = patient_dict.get('name')
             email = patient_dict.get('user_email')
             phone = patient_dict.get('phone')
-            age = (current_date - datetime.datetime.strptime(patient_dict.get('date'), '%m%d%Y').date()).days // 365
+            age = (current_date - datetime.datetime.strptime(
+                patient_dict.get('date'), '%m%d%Y').date()).days // 365
             address = patient_dict.get('address')
             bio = patient_dict.get('user_bio')
             gender = patient_dict.get('gender')
         else:
             raise HTTPException(status_code=404, detail="Patient not found")
-        
+
         patient_data = {
             'name': name,
             'email': email,
@@ -451,31 +478,34 @@ async def profile(request: Request):
             'bio': bio,
             'gender': gender
         }
-        
+
         bucket = client.get_bucket(bucket_path)
         blobs = bucket.list_blobs(prefix=f"{username}/")
         prefixes = set()
         toBeRendered = []
-        
+
         for blob in chain(*blobs.pages):
             prefixes.add(blob.name.split('/')[0])
             if blob.name.endswith('.pdf'):
                 pdf_name = blob.name.split('/')[1]
                 pdf_link = f"https://storage.googleapis.com/{bucket_path}/{blob.name}"
                 metadata = blob.metadata
-                metadata_str = str(metadata).replace("'", '').replace('{', '').replace('}', '')
-                tbu = {'pdf_name': pdf_name, 'pdf_link': pdf_link, 'metadata': metadata_str}
+                metadata_str = str(metadata).replace(
+                    "'", '').replace('{', '').replace('}', '')
+                tbu = {'pdf_name': pdf_name, 'pdf_link': pdf_link,
+                       'metadata': metadata_str}
                 toBeRendered.append(tbu)
-        
+
         return templates.TemplateResponse('viewProfileClinic.html', {'request': request, 'patient_data': patient_data, 'toBeRendered': toBeRendered})
+
 
 @app.get('/showDocs')
 async def showDocs(request: Request):
     username = session['username']
     bucket = client.get_bucket(bucket_path)
-    blobs = bucket.list_blobs(prefix=username+'/') 
+    blobs = bucket.list_blobs(prefix=username+'/')
     prefixes = set()
-    toBeRendered =[]
+    toBeRendered = []
 
     for blob in chain(*blobs.pages):
         prefixes.add(blob.name.split('/')[0])
@@ -483,7 +513,7 @@ async def showDocs(request: Request):
             pdf_name = blob.name
             pdf_link = f"https://storage.googleapis.com/{bucket_path}/{blob.name}"
             metadata = blob.metadata
-            #only get pdfname from '/' onwards
+            # only get pdfname from '/' onwards
             pdf_name = pdf_name.split('/')[1]
             metadata = str(metadata)
             metadata = metadata.replace('metadata', '')
@@ -492,20 +522,24 @@ async def showDocs(request: Request):
             metadata = metadata.replace("'", '')
             metadata = metadata.replace(':', '')
 
-            tbu = {'pdf_name': pdf_name, 'pdf_link': pdf_link, 'metadata': metadata}
+            tbu = {'pdf_name': pdf_name,
+                   'pdf_link': pdf_link, 'metadata': metadata}
             toBeRendered.append(tbu)
     return templates.TemplateResponse('yourDocs.html', {'request': request, 'toBeRendered': toBeRendered})
 
+
 @app.post("/recommender", response_class=HTMLResponse)
 async def recommender(request: Request, symptom1: str = Form(...), symptom2: str = Form(...), symptom3: str = Form(...)):
-    symptoms = [to_camel_case(symptom1), to_camel_case(symptom2), to_camel_case(symptom3)]
+    symptoms = [to_camel_case(symptom1), to_camel_case(
+        symptom2), to_camel_case(symptom3)]
     input_data = [0] * len(data_dict["symptom_index"])
     for symptom in symptoms:
         index = data_dict["symptom_index"].get(symptom)
         if index is not None:
             input_data[index] = 1
     input_data = np.array(input_data).reshape(1, -1)
-    final_prediction = data_dict["prediction_classes"][loaded_rf_model.predict(input_data)[0]]
+    final_prediction = data_dict["prediction_classes"][loaded_rf_model.predict(input_data)[
+        0]]
     specialist_info = loaded_specialized_dict.get(final_prediction)
     if specialist_info is None:
         specialist_department = "Unknown"
@@ -516,9 +550,8 @@ async def recommender(request: Request, symptom1: str = Form(...), symptom2: str
         severity = specialist_info.get("severity", "Unknown")
         observed_symptoms = specialist_info.get("observed_symptoms", [])
 
-        
-
-    clinics = firestoreDB.collection('clinics').where('specialties', 'array_contains', specialist_department).stream()
+    clinics = firestoreDB.collection('clinics').where(
+        'specialties', 'array_contains', specialist_department).stream()
     clinic_list = []
     for clinic in clinics:
         clinic_list.append(clinic.to_dict())
@@ -530,6 +563,7 @@ async def recommender(request: Request, symptom1: str = Form(...), symptom2: str
         "clinic_data": clinic_list  # Add the clinic data to the response dictionary
     }
     return templates.TemplateResponse("recommender_html.html", {"request": request, "response": response})
+
 
 @app.post("/book_appointment")
 async def book_appointment(
