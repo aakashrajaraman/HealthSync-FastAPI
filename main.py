@@ -102,7 +102,7 @@ async def login_page(request: Request):
 
 
 @app.get("/chatbot")
-async def chatbot_page(request: Request):
+async def chatbot(request: Request):
     return templates.TemplateResponse("chatbot.html", {"request": request})
 
 
