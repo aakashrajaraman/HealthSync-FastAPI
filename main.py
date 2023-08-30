@@ -31,7 +31,7 @@ apps = []
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="D:\Backup\Desktop\programs\HealthSync_FastAPI\static"), name="static")
+app.mount("/static", StaticFiles(directory="\static"), name="static")
 
 load_dotenv()
 path = os.getenv('FIREBASE_KEY_PATH')
@@ -50,18 +50,18 @@ session = {}
 
 
 # Load the rf model using pickle
-with open(r"D:\Backup\Desktop\programs\HealthSync_FastAPI\final_rf_model.pkl", "rb") as file:
+with open(r"final_rf_model.pkl", "rb") as file:
     loaded_rf_model = pickle.load(file)
 
 # Load the specialized_dict from JSON
-with open(r"D:\Backup\Desktop\programs\HealthSync_FastAPI\disease_specialist_dict.json", "r") as file:
+with open(r"disease_specialist_dict.json", "r") as file:
     loaded_specialized_dict = json.load(file)
 
 # Load the prediction_encoder classes from JSON
-with open(r"D:\Backup\Desktop\programs\HealthSync_FastAPI\encoder_data.json", "r") as file:
+with open(r"encoder_data.json", "r") as file:
     encoder_data = json.load(file)
 
-with open(r"D:\Backup\Desktop\programs\HealthSync_FastAPI\X.pkl", "rb") as file:
+with open(r"X.pkl", "rb") as file:
     X = pickle.load(file)
 
 symptoms = X.columns.values
