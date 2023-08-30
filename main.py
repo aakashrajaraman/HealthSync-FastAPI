@@ -34,7 +34,7 @@ app = FastAPI()
 #app.mount("/static", StaticFiles(directory="static"), name="static")
 
 load_dotenv()
-path = os.getenv('FIREBASE_KEY_PATH')
+path = os.environ.get("FIREBASE_KEY_PATH")
 bucket_path = "healthsync-c9b49.appspot.com"
 current_date = datetime.date.today()
 
