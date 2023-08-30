@@ -7,9 +7,14 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 
+@app.get("/")
+def home():
+    return "Home"
+
+
 @app.get("/ping")
 def test():
-    return "pong"
+    return "Pong"
 
 
 @app.get("/chatbot")
