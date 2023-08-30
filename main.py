@@ -22,7 +22,7 @@ import io
 from doctr.io import DocumentFile
 import tensorflow as tf
 
-# predictor = torch.load(r"D:/Backup/Desktop/programs/HealthSync/text_extraction_model.pth")
+predictor = torch.load(r"D:/Backup/Desktop/programs/HealthSync_FastAPI/text_extraction_model.pth")
 clinic_data = {}
 global userType
 apps = []
