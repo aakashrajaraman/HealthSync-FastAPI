@@ -19,10 +19,10 @@ import torch
 os.environ['USE_TORCH'] = '1'
 from pathlib import Path
 import io 
-from doctr.io import DocumentFile
-import tensorflow as tf
+#from doctr.io import DocumentFile
+#import tensorflow as tf
 
-predictor = torch.load(r"D:/Backup/Desktop/programs/HealthSync_FastAPI/text_extraction_model.pth")
+#predictor = torch.load(r"D:/Backup/Desktop/programs/HealthSync_FastAPI/text_extraction_model.pth")
 clinic_data = {}
 global userType
 apps = []
@@ -31,7 +31,7 @@ apps = []
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="\static"), name="static")
+#app.mount("/static", StaticFiles(directory="static"), name="static")
 
 load_dotenv()
 path = os.getenv('FIREBASE_KEY_PATH')
