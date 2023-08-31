@@ -1,3 +1,4 @@
-
+.env
 text_extraction_model.pth
 env
+key.json
