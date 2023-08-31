@@ -19,7 +19,7 @@ import torch
 os.environ['USE_TORCH'] = '1'
 from pathlib import Path
 import io 
-from doctr.io import DocumentFile
+#from doctr.io import DocumentFile
 #import tensorflow as tf
 
 predictor = torch.load(r"text_extraction_model.pth")
